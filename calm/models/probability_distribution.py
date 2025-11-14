@@ -34,6 +34,9 @@ class ProbabilityDistributionComputer(nn.Module):
         Returns:
             torch.Tensor: Similarity scores [batch_size, num_classes]
         """
+        # Ensure anchors match feature device/dtype (CLIP may output fp16)
+        anchors = anchors.to(device=features.device, dtype=features.dtype)
+
         # Normalize features and anchors
         features_norm = F.normalize(features, p=2, dim=-1)
         anchors_norm = F.normalize(anchors, p=2, dim=-1)
