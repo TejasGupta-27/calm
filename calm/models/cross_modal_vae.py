@@ -220,6 +220,13 @@ class CrossModalVAE(nn.Module):
                 - logvar: Latent log variance [batch_size, latent_dim]
                 - z: Latent variable [batch_size, latent_dim]
         """
+        # Ensure input matches module dtype/device (handles mixed precision CLIP outputs)
+        module_params = next(self.parameters())
+        video_prob_dist = video_prob_dist.to(
+            device=module_params.device,
+            dtype=module_params.dtype
+        )
+
         # Encode
         z, mu, logvar = self.encode(video_prob_dist)
 
