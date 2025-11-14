@@ -1,0 +1,28 @@
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+.env
+
+# Project datasets and large assets
+datasets/
+
+# Training outputs and checkpoints
+outputs/
+checkpoints/
+
+# IDE / editor metadata
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Misc
+.DS_Store
+
