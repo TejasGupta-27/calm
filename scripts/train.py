@@ -14,6 +14,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 import clip
+from tqdm.auto import tqdm
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -126,7 +127,14 @@ def train_epoch(model, dataloader, criterion, optimizer, device, logger, epoch, 
 
     start_time = time.time()
 
-    for batch_idx, batch in enumerate(dataloader):
+    progress_bar = tqdm(
+        dataloader,
+        desc=f"Train Epoch {epoch}",
+        leave=False,
+        dynamic_ncols=True
+    )
+
+    for batch_idx, batch in enumerate(progress_bar):
         # Move data to device
         video_frames = batch['video_frames'].to(device)
 
@@ -157,6 +165,11 @@ def train_epoch(model, dataloader, criterion, optimizer, device, logger, epoch, 
             elapsed = time.time() - start_time
             lr = get_lr(optimizer)
 
+            progress_bar.set_postfix({
+                'loss': f"{metrics.metrics['total_loss'].avg:.4f}",
+                'lr': f"{lr:.2e}"
+            })
+
             logger.info(
                 f"Epoch [{epoch}] Batch [{batch_idx + 1}/{len(dataloader)}] | "
                 f"LR: {lr:.2e} | {metrics} | "
@@ -184,7 +197,12 @@ def evaluate(model, dataloader, device, logger):
 
     evaluator = RetrievalEvaluator(top_k=[1, 5, 10])
 
-    for batch in dataloader:
+    for batch in tqdm(
+        dataloader,
+        desc="Evaluating",
+        leave=False,
+        dynamic_ncols=True
+    ):
         # Move data to device
         video_frames = batch['video_frames'].to(device)
         texts = batch['texts']
