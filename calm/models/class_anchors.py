@@ -68,7 +68,8 @@ class ClassAnchorExtractor(nn.Module):
             prompt_features = self.text_encoder(tokens)
 
         # Add learnable positional embeddings (Equation 5 in paper)
-        class_anchors = prompt_features + self.positional_embeddings
+        positional_embeddings = self.positional_embeddings.to(prompt_features.device)
+        class_anchors = prompt_features + positional_embeddings
 
         # Store for future use
         self.class_anchors = class_anchors.detach()
